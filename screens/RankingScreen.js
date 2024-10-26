@@ -1,18 +1,18 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, Image } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, requireNativeComponent } from 'react-native';
 
 function RankingScreen() {
   const topUsers = [
-    { id: 2, rank: '#2', name: '사용자이름', score: '999,999,999', profile: require('../assets/images/profile.png') },
-    { id: 1, rank: '#1', name: '사용자이름', score: '999,999,999', profile:require('../assets/images/profile.png') },
-    { id: 3, rank: '#3', name: '사용자이름', score: '999,999,999', profile: require('../assets/images/profile.png') },
+    { id: 2, rank: '#2', name: '사용자이름', score: '999,999,999', profile: require('../assets/images/profile2.png') },
+    { id: 1, rank: '#1', name: '사용자이름', score: '999,999,999', profile:require('../assets/images/profile2.png') },
+    { id: 3, rank: '#3', name: '사용자이름', score: '999,999,999', profile: require('../assets/images/profile2.png') },
   ];
 
   const otherUsers = Array(7).fill({
     rank: '#4',
     name: '사용자이름',
     score: '999,999,999',
-    profile:require('../assets/images/profile2.png')
+    profile:require('../assets/images/profile.png')
   });
 
   return (
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop:40,
+    marginTop:30,
     marginBottom: 40,
     paddingTop: 30,
     paddingHorizontal: 24,
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Wanted Sans',
   },
   scoreText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#FFD000',
     fontWeight: '500',
   },
