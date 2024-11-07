@@ -1,48 +1,28 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, Easing } from 'react-native';
+import LottieView from 'lottie-react-native';
 
 function ClickerScreen() {
   const [count, setCount] = useState(0);
-  const shakeAnimation = useRef(new Animated.Value(0)).current;
   const [fallingMangos, setFallingMangos] = useState([]);
   const [fallingLeaves, setFallingLeaves] = useState([]);
+  const [showClickAnimation, setShowClickAnimation] = useState(false);
   const nextMangoId = useRef(0);
   const nextLeafId = useRef(0);
+  const lottieRef = useRef();
+  const idleTimerRef = useRef(null);
 
-  const shakeTrees = () => {
-    Animated.sequence([
-      Animated.timing(shakeAnimation, {
-        toValue: 0.5,
-        duration: 150,
-        useNativeDriver: true,
-        easing: Easing.elastic(1),
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: -0.5,
-        duration: 150,
-        useNativeDriver: true,
-        easing: Easing.elastic(1),
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: 0.3,
-        duration: 150,
-        useNativeDriver: true,
-        easing: Easing.elastic(1),
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: -0.3,
-        duration: 150,
-        useNativeDriver: true,
-        easing: Easing.elastic(1),
-      }),
-      Animated.spring(shakeAnimation, {
-        toValue: 0,
-        damping: 5,
-        stiffness: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
+  const startIdleTimer = () => {
+    clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = setTimeout(() => {
+      setShowClickAnimation(true);
+    }, 4000);
   };
+
+  useEffect(() => {
+    startIdleTimer();
+    return () => clearTimeout(idleTimerRef.current);
+  }, []);
 
   const createFallingMango = () => {
     const mangoId = nextMangoId.current++;
@@ -170,8 +150,9 @@ function ClickerScreen() {
   };
 
   const handleClick = () => {
+    setShowClickAnimation(false);
+    startIdleTimer();
     setCount(prev => prev + 1);
-    shakeTrees();
     createFallingMango();
     const leafCount = Math.floor(Math.random() * 2) + 1;
     for (let i = 0; i < leafCount; i++) {
@@ -181,83 +162,86 @@ function ClickerScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.scoreContainer}>
-        <Image 
-          source={require('../assets/images/Mango.png')}
-          style={styles.mangoIcon}
-        />
-        <Text style={styles.scoreText}>{count.toLocaleString()}</Text>
+      <View style={styles.overlay}>
+        <View style={styles.scoreContainer}>
+          <Image 
+            source={require('../assets/images/Mango.png')}
+            style={styles.mangoIcon}
+          />
+          <Text style={styles.scoreText}>{count.toLocaleString()}</Text>
+        </View>
+
+        <TouchableOpacity 
+          onPress={handleClick} 
+          style={styles.treeContainer}
+          activeOpacity={1}
+        >
+          <LottieView
+            source={require('../assets/animations/tree1.json')}
+            style={styles.treeAnimation}
+            autoPlay={true}
+            loop={true}
+            speed={1}
+          />
+          
+          {showClickAnimation && (
+            <LottieView
+              source={require('../assets/animations/click2.json')}
+              style={styles.clickAnimation}
+              autoPlay={true}
+              loop={true}
+              speed={1}
+            />
+          )}
+        </TouchableOpacity>
+
+        {fallingLeaves.map(leaf => (
+          <Animated.Image
+            key={leaf.id}
+            source={require('../assets/images/leaf1.png')}
+            style={[
+              styles.fallingLeaf,
+              {
+                transform: [
+                  { translateX: leaf.animation.x },
+                  { translateY: leaf.animation.y },
+                  {
+                    rotate: leaf.rotation.interpolate({
+                      inputRange: [-360, 360],
+                      outputRange: ['-360deg', '360deg'],
+                    }),
+                  },
+                  { scale: leaf.scale },
+                ],
+              },
+            ]}
+          />
+        ))}
+
+        {fallingMangos.map(mango => (
+          <Animated.Image
+            key={mango.id}
+            source={require('../assets/images/Mango.png')}
+            style={[
+              styles.fallingMango,
+              {
+                transform: [
+                  { translateX: mango.animation.x },
+                  { translateY: mango.animation.y },
+                  {
+                    rotate: mango.rotation.interpolate({
+                      inputRange: [0, 360],
+                      outputRange: ['0deg', '360deg'],
+                    }),
+                  },
+                  { scale: mango.scale },
+                ],
+                shadowOpacity: mango.shadowOpacity,
+              },
+            ]}
+          />
+        ))}
       </View>
-
-      <TouchableOpacity 
-        onPress={handleClick} 
-        style={styles.treeContainer}
-        activeOpacity={1}
-      >
-        <Animated.Image 
-          source={require('../assets/images/tree.png')}
-          style={[
-            styles.treeImage,
-            {
-              transform: [
-                {
-                  rotate: shakeAnimation.interpolate({
-                    inputRange: [-1, 1],
-                    outputRange: ['-5deg', '5deg'],
-                  }),
-                },
-              ],
-            },
-          ]}
-        />
-      </TouchableOpacity>
-
-      {fallingLeaves.map(leaf => (
-        <Animated.Image
-          key={leaf.id}
-          source={require('../assets/images/leaf.png')}
-          style={[
-            styles.fallingLeaf,
-            {
-              transform: [
-                { translateX: leaf.animation.x },
-                { translateY: leaf.animation.y },
-                {
-                  rotate: leaf.rotation.interpolate({
-                    inputRange: [-360, 360],
-                    outputRange: ['-360deg', '360deg'],
-                  }),
-                },
-                { scale: leaf.scale },
-              ],
-            },
-          ]}
-        />
-      ))}
-
-      {fallingMangos.map(mango => (
-        <Animated.Image
-          key={mango.id}
-          source={require('../assets/images/Mango.png')}
-          style={[
-            styles.fallingMango,
-            {
-              transform: [
-                { translateX: mango.animation.x },
-                { translateY: mango.animation.y },
-                {
-                  rotate: mango.rotation.interpolate({
-                    inputRange: [0, 360],
-                    outputRange: ['0deg', '360deg'],
-                  }),
-                },
-                { scale: mango.scale },
-              ],
-              shadowOpacity: mango.shadowOpacity,
-            },
-          ]}
-        />
-      ))}
     </View>
   );
 }
@@ -265,7 +249,10 @@ function ClickerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#808080',
+  },
+  overlay: {
+    flex: 1,
   },
   scoreContainer: {
     flexDirection: 'row',
@@ -302,25 +289,24 @@ const styles = StyleSheet.create({
   scoreText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#FFFFFF',
   },
   treeContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  treeImage: {
+  treeAnimation: {
     width: 200,
     height: 200,
-    resizeMode: 'contain',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
+  },
+  clickAnimation: {
+    width: 80,
+    height: 80,
+    position: 'absolute',
+    top: '50%',
+    marginTop: -45,
+    right: 40,
   },
   fallingMango: {
     width: 30,

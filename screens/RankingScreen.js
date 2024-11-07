@@ -1,19 +1,174 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, requireNativeComponent } from 'react-native';
+import React, { useEffect } from 'react';
+import { 
+  View, 
+  Text, 
+  ScrollView, 
+  StyleSheet, 
+  Image, 
+  Animated, 
+  Easing 
+} from 'react-native';
 
 function RankingScreen() {
-  const topUsers = [
+  const [topUsers] = React.useState([
     { id: 2, rank: '#2', name: '사용자이름', score: '999,999,999', profile: require('../assets/images/profile2.png') },
-    { id: 1, rank: '#1', name: '사용자이름', score: '999,999,999', profile:require('../assets/images/profile2.png') },
+    { id: 1, rank: '#1', name: '사용자이름', score: '999,999,999', profile: require('../assets/images/profile2.png') },
     { id: 3, rank: '#3', name: '사용자이름', score: '999,999,999', profile: require('../assets/images/profile2.png') },
-  ];
+  ]);
 
-  const otherUsers = Array(7).fill({
-    rank: '#4',
-    name: '사용자이름',
-    score: '999,999,999',
-    profile:require('../assets/images/profile.png')
-  });
+  const [otherUsers] = React.useState(
+    Array(20).fill().map((_, index) => ({
+      rank: `#${index + 4}`,
+      name: '사용자이름',
+      score: '999,999,999',
+      profile: require('../assets/images/profile.png')
+    }))
+  );
+
+  // 각 순위별 애니메이션 값 설정
+  const firstAnimation = {
+    scale: new Animated.Value(0.3),
+    opacity: new Animated.Value(0),
+    translateY: new Animated.Value(50)
+  };
+  const secondAnimation = {
+    scale: new Animated.Value(0.3),
+    opacity: new Animated.Value(0),
+    translateY: new Animated.Value(50)
+  };
+  const thirdAnimation = {
+    scale: new Animated.Value(0.3),
+    opacity: new Animated.Value(0),
+    translateY: new Animated.Value(50)
+  };
+  
+  // 4등 이하의 각 카드에 대한 애니메이션 값들
+  const otherAnimations = Array(20).fill(0).map(() => ({
+    translateY: new Animated.Value(50),
+    opacity: new Animated.Value(0),
+    scale: new Animated.Value(0.8)
+  }));
+
+  useEffect(() => {
+    // 더 부드러운 애니메이션을 위한 공통 설정
+    const commonConfig = {
+      duration: 600,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      useNativeDriver: true,
+    };
+
+    // 공통 스케일 애니메이션 설정
+    const getScaleAnimation = (scaleValue) => {
+      return Animated.timing(scaleValue, {
+        toValue: 1,
+        duration: 800,
+        easing: Easing.bezier(0.34, 1.56, 0.64, 1),
+        useNativeDriver: true,
+      });
+    };
+
+    // 3위 -> 2위 -> 1위 -> 4등 이하 순서로 실행되는 애니메이션
+    Animated.sequence([
+      // 3위 등장
+      Animated.parallel([
+        getScaleAnimation(thirdAnimation.scale),
+        Animated.timing(thirdAnimation.opacity, {
+          toValue: 1,
+          duration: 500,
+          easing: Easing.bezier(0.4, 0, 0.2, 1),
+          useNativeDriver: true,
+        }),
+        Animated.timing(thirdAnimation.translateY, {
+          toValue: 0,
+          ...commonConfig,
+        })
+      ]),
+      // 2위 등장
+      Animated.parallel([
+        getScaleAnimation(secondAnimation.scale),
+        Animated.timing(secondAnimation.opacity, {
+          toValue: 1,
+          duration: 500,
+          easing: Easing.bezier(0.4, 0, 0.2, 1),
+          useNativeDriver: true,
+        }),
+        Animated.timing(secondAnimation.translateY, {
+          toValue: 0,
+          ...commonConfig,
+        })
+      ]),
+      // 1위 등장
+      Animated.parallel([
+        getScaleAnimation(firstAnimation.scale),
+        Animated.timing(firstAnimation.opacity, {
+          toValue: 1,
+          duration: 500,
+          easing: Easing.bezier(0.4, 0, 0.2, 1),
+          useNativeDriver: true,
+        }),
+        Animated.timing(firstAnimation.translateY, {
+          toValue: 0,
+          ...commonConfig,
+        })
+      ]),
+      // 4등 이하 카드들 순차적 등장
+      Animated.stagger(80,
+        otherAnimations.map((anim) =>
+          Animated.parallel([
+            Animated.timing(anim.translateY, {
+              toValue: 0,
+              duration: 600,
+              easing: Easing.bezier(0.34, 1.56, 0.64, 1),
+              useNativeDriver: true,
+            }),
+            Animated.timing(anim.opacity, {
+              toValue: 1,
+              duration: 400,
+              easing: Easing.bezier(0.4, 0, 0.2, 1),
+              useNativeDriver: true,
+            }),
+            Animated.timing(anim.scale, {
+              toValue: 1,
+              duration: 600,
+              easing: Easing.bezier(0.34, 1.56, 0.64, 1),
+              useNativeDriver: true,
+            })
+          ])
+        )
+      )
+    ]).start();
+  }, []);
+
+  const getAnimationStyle = (rank) => {
+    switch (rank) {
+      case '#1':
+        return {
+          opacity: firstAnimation.opacity,
+          transform: [
+            { scale: firstAnimation.scale },
+            { translateY: firstAnimation.translateY }
+          ]
+        };
+      case '#2':
+        return {
+          opacity: secondAnimation.opacity,
+          transform: [
+            { scale: secondAnimation.scale },
+            { translateY: secondAnimation.translateY }
+          ]
+        };
+      case '#3':
+        return {
+          opacity: thirdAnimation.opacity,
+          transform: [
+            { scale: thirdAnimation.scale },
+            { translateY: thirdAnimation.translateY }
+          ]
+        };
+      default:
+        return {};
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -21,51 +176,65 @@ function RankingScreen() {
         <Text style={styles.title}>랭킹</Text>
       </View>
       <ScrollView 
-        style={styles.scrollView} 
-        contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={false}
+        bounces={true}
+        showsVerticalScrollIndicator={true}
       >
-        <View style={styles.topRanksWrapper}>
-          <View style={styles.topRanksContainer}>
-            {topUsers.map((user) => (
-              <View
-                key={user.id}
+        <View style={styles.content}>
+          <View style={styles.topRanksWrapper}>
+            <View style={styles.topRanksContainer}>
+              {topUsers.map((user) => (
+                <Animated.View
+                  key={user.id}
+                  style={[
+                    styles.topRankContainer,
+                    user.rank === '#1' && styles.firstRank,
+                    user.rank === '#2' && styles.secondRank,
+                    user.rank === '#3' && styles.thirdRank,
+                    getAnimationStyle(user.rank)
+                  ]}
+                >
+                  <Text style={[
+                    styles.rankText,
+                    user.rank === '#1' && styles.firstRankText,
+                    user.rank === '#2' && styles.secondRankText,
+                    user.rank === '#3' && styles.thirdRankText,
+                  ]}>
+                    {user.rank}
+                  </Text>
+                  <Image source={user.profile} style={styles.topProfileCircle} />
+                  <Text style={styles.topRankNameText}>{user.name}</Text>
+                  <Text style={styles.scoreText}>{user.score}원</Text>
+                </Animated.View>
+              ))}
+            </View>
+          </View>
+          <View style={styles.rankDivider} />
+          <View style={styles.regularRanksContainer}>
+            {otherUsers.map((user, index) => (
+              <Animated.View 
+                key={index} 
                 style={[
-                  styles.topRankContainer,
-                  user.rank === '#1' && styles.firstRank,
-                  user.rank === '#2' && styles.secondRank,
-                  user.rank === '#3' && styles.thirdRank,
+                  styles.regularRankContainer,
+                  {
+                    opacity: otherAnimations[index].opacity,
+                    transform: [
+                      { translateY: otherAnimations[index].translateY },
+                      { scale: otherAnimations[index].scale }
+                    ]
+                  }
                 ]}
               >
-                <Text style={[
-                  styles.rankText,
-                  user.rank === '#1' && styles.firstRankText,
-                  user.rank === '#2' && styles.secondRankText,
-                  user.rank === '#3' && styles.thirdRankText,
-                ]}>
-                  {user.rank}
-                </Text>
-                <Image source={user.profile} style={styles.topProfileCircle} />
-                <Text style={styles.topRankNameText}>{user.name}</Text>
-                <Text style={styles.scoreText}>{user.score}원</Text>
-              </View>
+                <Text style={styles.rankText}>#{index + 4}</Text>
+                <View style={styles.regularRankInfo}>
+                  <View style={styles.profileInfoContainer}>
+                    <Image source={user.profile} style={styles.profileCircle} />
+                    <Text style={styles.regularNameText}>{user.name}</Text>
+                  </View>
+                  <Text style={styles.scoreText}>{user.score}원</Text>
+                </View>
+              </Animated.View>
             ))}
           </View>
-        </View>
-        <View style={styles.rankDivider} />
-        <View style={styles.regularRanksContainer}>
-          {otherUsers.map((user, index) => (
-            <View key={index} style={styles.regularRankContainer}>
-              <Text style={styles.rankText}>{user.rank}</Text>
-              <View style={styles.regularRankInfo}>
-                <View style={styles.profileInfoContainer}>
-                  <Image source={user.profile} style={styles.profileCircle} />
-                  <Text style={styles.regularNameText}>{user.name}</Text>
-                </View>
-                <Text style={styles.scoreText}>{user.score}원</Text>
-              </View>
-            </View>
-          ))}
         </View>
       </ScrollView>
     </View>
@@ -77,29 +246,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+  content: {
+    paddingBottom: 100,
+  },
   titleContainer: {
-    marginTop: 70,
+    paddingTop: 60,
+    paddingBottom: 20,
     paddingHorizontal: 24,
+    backgroundColor: 'white',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
   },
-  scrollView: {
-    flex: 1,
-    marginTop: -40,
-  },
-  scrollViewContent: {
-  },
   topRanksWrapper: {
+    backgroundColor: 'white',
+    paddingTop: 20,
   },
   topRanksContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop:30,
     marginBottom: 40,
-    paddingTop: 30,
     paddingHorizontal: 24,
   },
   topRankContainer: {
@@ -124,14 +292,16 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#EEEEEE',
     alignSelf: 'center',
-    marginTop:10,
-    marginBottom:35,
+    marginTop: 10,
+    marginBottom: 35,
+  },
+  regularRanksContainer: {
+    paddingHorizontal: 24,
   },
   regularRankContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 24,
     gap: 20,
   },
   regularRankInfo: {
@@ -165,17 +335,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   secondRankText: {
-    color:'#5B5B5B',
-    fontSize:18,
+    color: '#5B5B5B',
+    fontSize: 18,
   },
   thirdRankText: {
     color: '#C98459',
-    fontSize:18,
+    fontSize: 18,
   },
   topRankNameText: {
     fontSize: 20,
     fontWeight: '600',
-    color:'#000'
+    color: '#000'
   },
   regularNameText: {
     fontSize: 18,
