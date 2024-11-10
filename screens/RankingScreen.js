@@ -11,15 +11,15 @@ import {
 
 function RankingScreen() {
   const [topUsers] = React.useState([
-    { id: 2, rank: '#2', name: '사용자이름', score: '999,999,999', profile: require('../assets/images/profile2.png') },
-    { id: 1, rank: '#1', name: '사용자이름', score: '999,999,999', profile: require('../assets/images/profile2.png') },
-    { id: 3, rank: '#3', name: '사용자이름', score: '999,999,999', profile: require('../assets/images/profile2.png') },
+    { id: 2, rank: '#2', name: '한유찬', score: '999,999,999', profile: require('../assets/images/profile2.png') },
+    { id: 1, rank: '#1', name: '신이현', score: '999,999,999', profile: require('../assets/images/profile2.png') },
+    { id: 3, rank: '#3', name: '김태영', score: '999,999,999', profile: require('../assets/images/profile2.png') },
   ]);
 
   const [otherUsers] = React.useState(
     Array(20).fill().map((_, index) => ({
       rank: `#${index + 4}`,
-      name: '사용자이름',
+      name: '손도현',
       score: '999,999,999',
       profile: require('../assets/images/profile.png')
     }))
@@ -42,7 +42,6 @@ function RankingScreen() {
     translateY: new Animated.Value(50)
   };
   
-  // 4등 이하의 각 카드에 대한 애니메이션 값들
   const otherAnimations = Array(20).fill(0).map(() => ({
     translateY: new Animated.Value(50),
     opacity: new Animated.Value(0),
@@ -50,31 +49,30 @@ function RankingScreen() {
   }));
 
   useEffect(() => {
-    // 더 부드러운 애니메이션을 위한 공통 설정
+    // 더 빠른 애니메이션을 위한 공통 설정
     const commonConfig = {
-      duration: 600,
+      duration: 300, // 600 -> 300으로 단축
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       useNativeDriver: true,
     };
 
-    // 공통 스케일 애니메이션 설정
+    // 스케일 애니메이션 설정 수정
     const getScaleAnimation = (scaleValue) => {
       return Animated.timing(scaleValue, {
         toValue: 1,
-        duration: 800,
+        duration: 400, // 800 -> 400으로 단축
         easing: Easing.bezier(0.34, 1.56, 0.64, 1),
         useNativeDriver: true,
       });
     };
 
-    // 3위 -> 2위 -> 1위 -> 4등 이하 순서로 실행되는 애니메이션
     Animated.sequence([
       // 3위 등장
       Animated.parallel([
         getScaleAnimation(thirdAnimation.scale),
         Animated.timing(thirdAnimation.opacity, {
           toValue: 1,
-          duration: 500,
+          duration: 250, // 500 -> 250으로 단축
           easing: Easing.bezier(0.4, 0, 0.2, 1),
           useNativeDriver: true,
         }),
@@ -88,7 +86,7 @@ function RankingScreen() {
         getScaleAnimation(secondAnimation.scale),
         Animated.timing(secondAnimation.opacity, {
           toValue: 1,
-          duration: 500,
+          duration: 250,
           easing: Easing.bezier(0.4, 0, 0.2, 1),
           useNativeDriver: true,
         }),
@@ -102,7 +100,7 @@ function RankingScreen() {
         getScaleAnimation(firstAnimation.scale),
         Animated.timing(firstAnimation.opacity, {
           toValue: 1,
-          duration: 500,
+          duration: 250,
           easing: Easing.bezier(0.4, 0, 0.2, 1),
           useNativeDriver: true,
         }),
@@ -112,24 +110,24 @@ function RankingScreen() {
         })
       ]),
       // 4등 이하 카드들 순차적 등장
-      Animated.stagger(80,
+      Animated.stagger(80, // 80 -> 40으로 단축
         otherAnimations.map((anim) =>
           Animated.parallel([
             Animated.timing(anim.translateY, {
               toValue: 0,
-              duration: 600,
+              duration: 600, // 600 -> 300으로 단축
               easing: Easing.bezier(0.34, 1.56, 0.64, 1),
               useNativeDriver: true,
             }),
             Animated.timing(anim.opacity, {
               toValue: 1,
-              duration: 400,
+              duration: 400, // 400 -> 200으로 단축
               easing: Easing.bezier(0.4, 0, 0.2, 1),
               useNativeDriver: true,
             }),
             Animated.timing(anim.scale, {
               toValue: 1,
-              duration: 600,
+              duration: 600, // 600 -> 300으로 단축
               easing: Easing.bezier(0.34, 1.56, 0.64, 1),
               useNativeDriver: true,
             })
