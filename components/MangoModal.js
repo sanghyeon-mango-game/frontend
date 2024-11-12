@@ -160,7 +160,6 @@ const styles = StyleSheet.create({
   rarityBadge: {
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 12,
     marginRight: 10,
     marginBottom: 5,
     color: 'white',
