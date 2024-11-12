@@ -1,12 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, Easing } from 'react-native';
 import LottieView from 'lottie-react-native';
+import MangoModal from '../components/MangoModal';
+import { checkMangoDropAndGet } from '../utils/mangoUtils';
 
 function ClickerScreen() {
   const [count, setCount] = useState(0);
   const [fallingMangos, setFallingMangos] = useState([]);
   const [fallingLeaves, setFallingLeaves] = useState([]);
   const [showClickAnimation, setShowClickAnimation] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [currentMango, setCurrentMango] = useState(null);
   const nextMangoId = useRef(0);
   const nextLeafId = useRef(0);
   const lottieRef = useRef();
@@ -152,8 +156,16 @@ function ClickerScreen() {
   const handleClick = () => {
     setShowClickAnimation(false);
     startIdleTimer();
+    
+    const droppedMango = checkMangoDropAndGet();
+    if (droppedMango) {
+      setCurrentMango(droppedMango);
+      setShowModal(true);
+    }
+    
     setCount(prev => prev + 1);
     createFallingMango();
+    
     const leafCount = Math.floor(Math.random() * 2) + 1;
     for (let i = 0; i < leafCount; i++) {
       setTimeout(() => createFallingLeaf(), i * 100);
@@ -162,6 +174,12 @@ function ClickerScreen() {
 
   return (
     <View style={styles.container}>
+      <MangoModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        mangoData={currentMango}
+      />
+
       <View style={styles.overlay}>
         <View style={styles.scoreContainer}>
           <Image 

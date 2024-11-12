@@ -25,7 +25,6 @@ function RankingScreen() {
     }))
   );
 
-  // 각 순위별 애니메이션 값 설정
   const firstAnimation = {
     scale: new Animated.Value(0.3),
     opacity: new Animated.Value(0),
@@ -49,30 +48,27 @@ function RankingScreen() {
   }));
 
   useEffect(() => {
-    // 더 빠른 애니메이션을 위한 공통 설정
     const commonConfig = {
-      duration: 300, // 600 -> 300으로 단축
+      duration: 300, 
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       useNativeDriver: true,
     };
 
-    // 스케일 애니메이션 설정 수정
     const getScaleAnimation = (scaleValue) => {
       return Animated.timing(scaleValue, {
         toValue: 1,
-        duration: 400, // 800 -> 400으로 단축
+        duration: 400, 
         easing: Easing.bezier(0.34, 1.56, 0.64, 1),
         useNativeDriver: true,
       });
     };
 
     Animated.sequence([
-      // 3위 등장
       Animated.parallel([
         getScaleAnimation(thirdAnimation.scale),
         Animated.timing(thirdAnimation.opacity, {
           toValue: 1,
-          duration: 250, // 500 -> 250으로 단축
+          duration: 250,
           easing: Easing.bezier(0.4, 0, 0.2, 1),
           useNativeDriver: true,
         }),
@@ -81,7 +77,6 @@ function RankingScreen() {
           ...commonConfig,
         })
       ]),
-      // 2위 등장
       Animated.parallel([
         getScaleAnimation(secondAnimation.scale),
         Animated.timing(secondAnimation.opacity, {
@@ -95,7 +90,6 @@ function RankingScreen() {
           ...commonConfig,
         })
       ]),
-      // 1위 등장
       Animated.parallel([
         getScaleAnimation(firstAnimation.scale),
         Animated.timing(firstAnimation.opacity, {
@@ -109,25 +103,24 @@ function RankingScreen() {
           ...commonConfig,
         })
       ]),
-      // 4등 이하 카드들 순차적 등장
-      Animated.stagger(80, // 80 -> 40으로 단축
+      Animated.stagger(80,
         otherAnimations.map((anim) =>
           Animated.parallel([
             Animated.timing(anim.translateY, {
               toValue: 0,
-              duration: 600, // 600 -> 300으로 단축
+              duration: 600, 
               easing: Easing.bezier(0.34, 1.56, 0.64, 1),
               useNativeDriver: true,
             }),
             Animated.timing(anim.opacity, {
               toValue: 1,
-              duration: 400, // 400 -> 200으로 단축
+              duration: 400, 
               easing: Easing.bezier(0.4, 0, 0.2, 1),
               useNativeDriver: true,
             }),
             Animated.timing(anim.scale, {
               toValue: 1,
-              duration: 600, // 600 -> 300으로 단축
+              duration: 600, 
               easing: Easing.bezier(0.34, 1.56, 0.64, 1),
               useNativeDriver: true,
             })
