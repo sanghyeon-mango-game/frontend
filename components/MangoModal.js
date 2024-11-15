@@ -12,8 +12,8 @@ function MangoModal({ visible, onClose, mangoData }) {
   const surpriseAnimationRef = useRef(null);
   const [imageSize, setImageSize] = useState({ width: 80, height: 80 });
   const screenWidth = Dimensions.get('window').width;
-  const modalWidth = Math.min(screenWidth * 0.8, 400);
-  const maxImageSize = modalWidth * 0.3;
+  const modalWidth = Math.min(screenWidth * 0.9, 400);
+  const maxImageSize = modalWidth * 0.2;
 
   useEffect(() => {
     if (visible && surpriseAnimationRef.current) {
@@ -49,7 +49,7 @@ function MangoModal({ visible, onClose, mangoData }) {
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
-        <View style={[styles.modalContent, { width: modalWidth }]}>
+        <View style={[styles.modalWrapper, { width: modalWidth }]}>
           <LottieView
             ref={surpriseAnimationRef}
             source={require('../assets/animations/surprise.json')}
@@ -58,39 +58,37 @@ function MangoModal({ visible, onClose, mangoData }) {
             loop={false}
             speed={1}
           />
-          
-          <View style={styles.header}>
-            <Text style={styles.title}>망고를 수확했습니다!</Text>
-          </View>
-
-          <View style={[styles.mangoInfoContainer, { borderColor: rarityColor }]}>
-            <Image 
-              source={mangoData.image}
-              style={[
-                styles.mangoImage,
-                {
-                  width: imageSize.width,
-                  height: imageSize.height,
-                }
-              ]}
-              resizeMode="contain"
-            />
-            <View style={styles.infoContent}>
-              <Text style={[styles.mangoName, { color: rarityColor }]}>{mangoData.name}</Text>
-              <View style={styles.rarityContainer}>
-                <Text style={[styles.rarityBadge, { backgroundColor: rarityColor }]}>
-                  {mangoData.rarity}
-                </Text>
+          <View style={styles.modalContent}>
+            <View style={styles.contentContainer}>
+              <View style={[styles.infoContainer, { borderColor: rarityColor }]}>
+                <Image 
+                  source={mangoData.image}
+                  style={[
+                    styles.mangoImage,
+                    {
+                      width: imageSize.width,
+                      height: imageSize.height,
+                    }
+                  ]}
+                  resizeMode="contain"
+                />
+                
+                <View style={styles.textRow}>
+                  <Text style={[styles.mangoName, { color: rarityColor }]}>{mangoData.name}</Text>
+                  <View style={[styles.rarityBadge, { backgroundColor: '#FFF3D1' }]}>
+                    <Text style={[styles.rarityText, { color: rarityColor }]}>{mangoData.rarity}</Text>
+                  </View>
+                </View>
               </View>
+
+              <TouchableOpacity 
+                style={[styles.confirmButton, { backgroundColor: rarityColor }]}
+                onPress={onClose}
+              >
+                <Text style={styles.confirmButtonText}>확인</Text>
+              </TouchableOpacity>
             </View>
           </View>
-
-          <TouchableOpacity 
-            style={[styles.closeButton, { backgroundColor: rarityColor }]}
-            onPress={onClose}
-          >
-            <Text style={styles.closeButtonText}>확인</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -104,77 +102,74 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modalContent: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 20,
+  modalWrapper: {
     alignItems: 'center',
-    elevation: 5,
-    marginTop: -20,
+    marginTop: 50, 
   },
   surpriseAnimation: {
     width: 300,
     height: 300,
     position: 'absolute',
     top: -150,
-    alignSelf: 'center',
   },
-  header: {
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 30,
+    padding: 14,
     alignItems: 'center',
-    marginBottom: 20,
-    marginTop: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
-  },
-  mangoInfoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF9F0',
-    padding: 15,
-    borderRadius: 15,
+    gap: 14,
     width: '100%',
-    marginBottom: 20,
+  },
+  contentContainer: {
+    width: '100%',
+    gap: 14,
+  },
+  infoContainer: {
+    width: '100%',
+    backgroundColor: 'white',
+    borderRadius: 25,
     borderWidth: 2,
+    padding: 14,
+    alignItems: 'center',
+    gap: 14,
   },
   mangoImage: {
-    marginRight: 15,
-    borderRadius: 10,
-  },
-  infoContent: {
-    flex: 1,
-  },
-  mangoName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  rarityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  rarityBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginRight: 10,
-    marginBottom: 5,
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  closeButton: {
-    paddingHorizontal: 30,
-    paddingVertical: 12,
-    borderRadius: 25,
     marginTop: 10,
   },
-  closeButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+  textRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  mangoName: {
+    fontFamily: 'Wanted Sans',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  rarityBadge: {
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rarityText: {
+    fontFamily: 'Wanted Sans',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  confirmButton: {
+    width: '100%',
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  confirmButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+    fontFamily: 'Wanted Sans',
   },
 });
 
