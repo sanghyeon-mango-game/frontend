@@ -1,69 +1,154 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView, Image, SafeAreaView, Animated } from 'react-native';
+import { MangoDetailModal } from '../components/MangoDetailModal';
 
 const MarketScreen = () => {
   const [selectedTab, setSelectedTab] = useState('망고');
+  const [selectedMango, setSelectedMango] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+
+  const mangos = Array(15).fill({
+    name: '망상망고',
+    price: '$8,145.69',
+    change: '+1.74%',
+    image: require('../assets/images/Mango.png'),
+  });
+
+  const handleTabChange = (tab) => {
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: tab === '망고' ? 0 : 1,
+          duration: 300,
+          useNativeDriver: true,
+        })
+      ]),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 150,
+        useNativeDriver: true,
+      })
+    ]).start();
+
+    setSelectedTab(tab);
+  };
+
+  const handleMangoPress = (mango) => {
+    setSelectedMango(mango);
+    setModalVisible(true);
+  };
 
   return (
-    <View style={styles.backgroundLayout}>
-      <Text style={styles.title}>시장</Text>
-      
-      <View style={styles.tabWrapper}>
-        <View style={styles.contentBackground}>
-          <View style={styles.tabContainer}>
-            <TouchableOpacity 
-              style={[
-                styles.tab, 
-                selectedTab === '망고' && styles.selectedTab
-              ]}
-              onPress={() => setSelectedTab('망고')}
-            >
-              <Text style={[
-                styles.tabText,
-                selectedTab === '망고' && styles.selectedTabText
-              ]}>망고</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[
-                styles.tab,
-                selectedTab === '나무' && styles.selectedTab
-              ]}
-              onPress={() => setSelectedTab('나무')}
-            >
-              <Text style={[
-                styles.tabText,
-                selectedTab === '나무' && styles.selectedTabText
-              ]}>나무</Text>
-            </TouchableOpacity>
+    <SafeAreaView style={styles.safe}>
+      <View style={styles.backgroundLayout}>
+        <Text style={styles.title}>시장</Text>
+        
+        <View style={styles.tabWrapper}>
+          <View style={styles.contentBackground}>
+            <View style={styles.tabContainer}>
+              <Animated.View
+                style={[
+                  styles.selectedTabIndicator,
+                  {
+                    transform: [{
+                      translateX: slideAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, (Dimensions.get('window').width - 58) / 2]
+                      })
+                    }]
+                  }
+                ]}
+              />
+              <TouchableOpacity
+                style={[
+                  styles.tab,
+                  selectedTab === '망고' && styles.selectedTab
+                ]}
+                onPress={() => handleTabChange('망고')}
+              >
+                <Text style={[
+                  styles.tabText,
+                  selectedTab === '망고' && styles.selectedTabText
+                ]}>망고</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[
+                  styles.tab,
+                  selectedTab === '나무' && styles.selectedTab
+                ]}
+                onPress={() => handleTabChange('나무')}
+              >
+                <Text style={[
+                  styles.tabText,
+                  selectedTab === '나무' && styles.selectedTabText
+                ]}>나무</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
 
-      <View style={styles.selectedContent}>
-        <Text>{selectedTab} 내용</Text>
+        <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+          <ScrollView
+            style={styles.contentContainer}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {mangos.map((mango, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.mangoItem}
+                onPress={() => handleMangoPress(mango)}
+              >
+                <View style={styles.leftContent}>
+                  <Image source={mango.image} style={styles.mangoIcon} />
+                  <Text style={styles.mangoName}>{mango.name}</Text>
+                </View>
+                <View style={styles.rightContent}>
+                  <Text style={styles.price}>{mango.price}</Text>
+                  <Text style={styles.change}>{mango.change}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </Animated.View>
+
+        <MangoDetailModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          mangoData={selectedMango}
+        />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
   backgroundLayout: {
-    width: Dimensions.get('window').width,
-    height: 917,
+    flex: 1,
+    backgroundColor: '#f5f5f5',
     paddingHorizontal: 24,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginTop: 70,
+    marginTop: 20,
     marginBottom: 20,
   },
   tabWrapper: {
     width: '100%',
+    marginBottom: 20,
   },
   contentBackground: {
     display: 'flex',
@@ -73,7 +158,7 @@ const styles = StyleSheet.create({
     gap: 5,
     flexShrink: 0,
     alignSelf: 'stretch',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
     borderRadius: 15,
   },
   tabContainer: {
@@ -81,6 +166,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     gap: 5,
+    position: 'relative',
+  },
+  selectedTabIndicator: {
+    position: 'absolute',
+    width: '50%',
+    height: '100%',
+    backgroundColor: '#FFD84D',
+    borderRadius: 10,
   },
   tab: {
     flex: 1,
@@ -88,10 +181,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: 'transparent',
+    zIndex: 1,
   },
   selectedTab: {
-    backgroundColor: '#FFD84D',
+    backgroundColor: 'transparent',
   },
   tabText: {
     fontSize: 16,
@@ -99,17 +193,62 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   selectedTabText: {
-    color: '#FFFFFF',
+    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
-  selectedContent: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+  contentContainer: {
     flex: 1,
+    width: '100%',
+  },
+  scrollContent: {
+    paddingBottom: 20,
+  },
+  mangoItem: {
+    display: 'flex',
+    padding: 14,
+    justifyContent: 'space-between',
+    alignItems: 'center',
     alignSelf: 'stretch',
-  }
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  leftContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  mangoIcon: {
+    width: 50,
+    height: 50,
+  },
+  mangoName: {
+    color: '#000',
+    fontFamily: 'Inter',
+    fontSize: 16,
+    fontStyle: 'normal',
+    fontWeight: '600',
+  },
+  rightContent: {
+    alignItems: 'flex-end',
+  },
+  price: {
+    color: '#000',
+    textAlign: 'right',
+    fontFamily: 'Inter',
+    fontSize: 16,
+    fontStyle: 'normal',
+    fontWeight: '600',
+  },
+  change: {
+    color: '#F00',
+    fontFamily: 'Inter',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: '600',
+  },
 });
 
 export default MarketScreen;
