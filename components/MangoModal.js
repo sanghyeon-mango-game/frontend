@@ -12,8 +12,8 @@ function MangoModal({ visible, onClose, mangoData }) {
   const surpriseAnimationRef = useRef(null);
   const [imageSize, setImageSize] = useState({ width: 80, height: 80 });
   const screenWidth = Dimensions.get('window').width;
-  const modalWidth = Math.min(screenWidth * 0.9, 400);
-  const maxImageSize = modalWidth * 0.2;
+  const modalWidth = Math.min(screenWidth * 0.8, 300);
+  const maxImageSize = modalWidth * 0.3;
 
   useEffect(() => {
     if (visible && surpriseAnimationRef.current) {
@@ -53,7 +53,7 @@ function MangoModal({ visible, onClose, mangoData }) {
           <LottieView
             ref={surpriseAnimationRef}
             source={require('../assets/animations/surprise.json')}
-            style={styles.surpriseAnimation}
+            style={[styles.surpriseAnimation, { width: modalWidth }]}
             autoPlay={false}
             loop={false}
             speed={1}
@@ -104,18 +104,17 @@ const styles = StyleSheet.create({
   },
   modalWrapper: {
     alignItems: 'center',
-    marginTop: 50, 
+    marginTop: 50,
   },
   surpriseAnimation: {
-    width: 300,
     height: 300,
     position: 'absolute',
     top: -150,
   },
   modalContent: {
     backgroundColor: 'white',
-    borderRadius: 30,
-    padding: 14,
+    borderRadius: 25,
+    padding: 16,
     alignItems: 'center',
     gap: 14,
     width: '100%',
@@ -127,47 +126,47 @@ const styles = StyleSheet.create({
   infoContainer: {
     width: '100%',
     backgroundColor: 'white',
-    borderRadius: 25,
+    borderRadius: 20,
     borderWidth: 2,
     padding: 14,
     alignItems: 'center',
     gap: 14,
   },
   mangoImage: {
-    marginTop: 10,
+    marginTop: 8,
   },
   textRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   mangoName: {
     fontFamily: 'Wanted Sans',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
   },
   rarityBadge: {
-    paddingVertical: 5,
-    paddingHorizontal: 8,
-    borderRadius: 15,
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
   rarityText: {
     fontFamily: 'Wanted Sans',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
   },
   confirmButton: {
     width: '100%',
-    height: 50,
-    borderRadius: 25,
+    height: 45,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
   confirmButtonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     fontFamily: 'Wanted Sans',
   },

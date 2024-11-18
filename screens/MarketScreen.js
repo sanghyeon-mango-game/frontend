@@ -211,8 +211,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'stretch',
     flexDirection: 'row',
-    backgroundColor: 'white',
-    borderRadius: 12,
+    backgroundColor: '#FFF',
+    borderRadius: 20,
     marginBottom: 8,
   },
   leftContent: {

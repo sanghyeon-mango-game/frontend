@@ -282,32 +282,18 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 1,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 3.84,
     elevation: 5,
   },
   mangoIcon: {
     width: 30,
     height: 30,
     marginRight: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
     elevation: 2,
   },
   scoreText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#00000066',
   },
   treeContainer: {
     flex: 1,

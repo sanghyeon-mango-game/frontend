@@ -19,7 +19,7 @@ export const MangoDetailModal = ({ visible, onClose }) => {
   const [mangoCount, setMangoCount] = useState(67234); 
   const [selectedQuantity, setSelectedQuantity] = useState(0); 
 
-  const dates = ['5/17', '5/18', '5/19', '5/20', '5/21', '5/22', '5/23', '5/24'];
+  const dates = ['11/01', '11/8', '11/15', '11/22', '11/29', '12/05', '12/12', '12/19'];
   const data = {
     labels: dates,
     datasets: [
@@ -130,7 +130,6 @@ export const MangoDetailModal = ({ visible, onClose }) => {
                   chartConfig={chartConfig}
                   bezier
                   style={{
-                    borderRadius: 16,
                     marginLeft: 0,
                     paddingRight: 20,
                   }}
@@ -318,7 +317,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   activeButton: {
-    backgroundColor: '#FFD84D',
+    backgroundColor: '#FFD000',
   },
   buttonText: {
     fontFamily: 'Wanted Sans',
@@ -358,10 +357,9 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   statsValue: {
-    fontFamily: 'Wanted Sans',
     fontSize: 24,
     fontWeight: '700',
-    color: '#FFD700',
+    color: '#FFD000',
     lineHeight: 24,
   },
   quantityContainer: {
