@@ -235,7 +235,7 @@ function RankingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#F5F5F5',
   },
   content: {
     paddingBottom: 100,
@@ -244,14 +244,14 @@ const styles = StyleSheet.create({
     paddingTop: 70,
     paddingBottom: 20,
     paddingHorizontal: 24,
-    backgroundColor: 'white',
+    backgroundColor: '#F5F5F5',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
   },
   topRanksWrapper: {
-    backgroundColor: 'white',
+    backgroundColor: '#F5F5F5',
     paddingTop: 20,
   },
   topRanksContainer: {

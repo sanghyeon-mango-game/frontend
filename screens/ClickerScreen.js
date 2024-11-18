@@ -267,7 +267,7 @@ function ClickerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: '#F5F5F5',
   },
   overlay: {
     flex: 1,

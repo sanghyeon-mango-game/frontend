@@ -131,7 +131,7 @@ export const MangoDetailModal = ({ visible, onClose }) => {
                   bezier
                   style={{
                     borderRadius: 16,
-                    marginLeft: -10,
+                    marginLeft: 0,
                     paddingRight: 20,
                   }}
                   withInnerLines={false}

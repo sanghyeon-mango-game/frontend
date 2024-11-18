@@ -13,7 +13,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.shinlee.mangoclick"
+      "bundleIdentifier": "com.shinlee.mangoclick",
+      "newArchEnabled": true
     },
     "android": {
       "adaptiveIcon": {
