@@ -195,7 +195,7 @@ function ClickerScreen() {
           activeOpacity={1}
         >
           <LottieView
-            source={require('../assets/animations/tree1.json')}
+            source={require('../assets/animations/mango.json')}
             style={styles.treeAnimation}
             autoPlay={true}
             loop={true}

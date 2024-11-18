@@ -11,9 +11,9 @@ import {
 
 function RankingScreen() {
   const [topUsers] = React.useState([
-    { id: 2, rank: '#2', name: '한유찬', score: '999,999,999', profile: require('../assets/images/profile2.png') },
-    { id: 1, rank: '#1', name: '신이현', score: '999,999,999', profile: require('../assets/images/profile2.png') },
-    { id: 3, rank: '#3', name: '김태영', score: '999,999,999', profile: require('../assets/images/profile2.png') },
+    { id: 2, rank: '#2', name: '한유찬', score: '999,999,999', profile: require('../assets/images/chan.png') },
+    { id: 1, rank: '#1', name: '신이현', score: '999,999,999', profile: require('../assets/images/jw.png') },
+    { id: 3, rank: '#3', name: '김태영', score: '999,999,999', profile: require('../assets/images/hwang.png') },
   ]);
 
   const [otherUsers] = React.useState(
@@ -21,7 +21,7 @@ function RankingScreen() {
       rank: `#${index + 4}`,
       name: '손도현',
       score: '999,999,999',
-      profile: require('../assets/images/profile.png')
+      profile: require('../assets/images/son.png')
     }))
   );
 
@@ -280,8 +280,8 @@ const styles = StyleSheet.create({
   },
   rankDivider: {
     width: 300,
-    height: 1,
-    backgroundColor: '#EEEEEE',
+    height: 2,
+    backgroundColor: '#e4e4e4',
     alignSelf: 'center',
     marginTop: 10,
     marginBottom: 35,

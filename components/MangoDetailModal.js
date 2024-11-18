@@ -19,14 +19,14 @@ export const MangoDetailModal = ({ visible, onClose }) => {
   const [mangoCount, setMangoCount] = useState(67234); 
   const [selectedQuantity, setSelectedQuantity] = useState(0); 
 
-  const dates = ['11/01', '11/8', '11/15', '11/22', '11/29', '12/05', '12/12', '12/19'];
+  const dates = ['5/17', '5/18', '5/19', '5/20', '5/21', '5/22', '5/23', '5/24'];
   const data = {
     labels: dates,
     datasets: [
       {
-        data: [70, 85, 65, 55, 45, 58, 42, 48],
+        data: [200, 150, 150, 150, 350, 280, 120, 100],
         strokeWidth: 2,
-        color: () => '#4EAD7F',
+        color: () => '#FFD000',
       }
     ],
   };
@@ -36,7 +36,7 @@ export const MangoDetailModal = ({ visible, onClose }) => {
     backgroundGradientFrom: '#ffffff',
     backgroundGradientTo: '#ffffff',
     decimalPlaces: 0,
-    color: () => '#4EAD7F',
+    color: () => '#FFD000',
     labelColor: () => '#666666',
     style: {
       borderRadius: 16,
@@ -44,9 +44,12 @@ export const MangoDetailModal = ({ visible, onClose }) => {
     propsForDots: {
       r: '5',
       strokeWidth: '2',
-      stroke: '#4EAD7F',
+      stroke: '#FFD000',
       fill: '#ffffff',
     },
+    yAxisLabel: '$',
+    yAxisSuffix: 'k',
+    yAxisInterval: 20,
   };
 
   const handleButtonPress = (button) => {
@@ -130,15 +133,19 @@ export const MangoDetailModal = ({ visible, onClose }) => {
                   chartConfig={chartConfig}
                   bezier
                   style={{
-                    marginLeft: 0,
-                    paddingRight: 20,
+                    borderRadius: 16,
+                    paddingRight: 40,
                   }}
-                  withInnerLines={false}
+                  withInnerLines={true}
                   withOuterLines={false}
                   withVerticalLines={false}
-                  withHorizontalLines={false}
+                  withHorizontalLines={true}
                   withVerticalLabels={true}
-                  withHorizontalLabels={false}
+                  withHorizontalLabels={true}
+                  yAxisInterval={2}
+                  yMin={0}
+                  yMax={100}
+                  segments={5}
                 />
               </ScrollView>
             </View>
@@ -317,7 +324,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   activeButton: {
-    backgroundColor: '#FFD000',
+    backgroundColor: '#FFD84D',
   },
   buttonText: {
     fontFamily: 'Wanted Sans',
@@ -357,9 +364,10 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   statsValue: {
+    fontFamily: 'Wanted Sans',
     fontSize: 24,
     fontWeight: '700',
-    color: '#FFD000',
+    color: '#FFD700',
     lineHeight: 24,
   },
   quantityContainer: {
@@ -377,7 +385,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
-    
   },
   quantityButtonText: {
     fontFamily: 'Wanted Sans',

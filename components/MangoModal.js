@@ -11,16 +11,30 @@ const RARITY_COLORS = {
 function MangoModal({ visible, onClose, mangoData }) {
   const surpriseAnimationRef = useRef(null);
   const [imageSize, setImageSize] = useState({ width: 80, height: 80 });
+  const [shouldPlayAnimation, setShouldPlayAnimation] = useState(false);
   const screenWidth = Dimensions.get('window').width;
-  const modalWidth = Math.min(screenWidth * 0.8, 300);
-  const maxImageSize = modalWidth * 0.3;
+  const modalWidth = Math.min(screenWidth * 0.9, 300);
+  const maxImageSize = modalWidth * 0.2;
 
   useEffect(() => {
-    if (visible && surpriseAnimationRef.current) {
-      surpriseAnimationRef.current.play();
+    if (visible) {
+      setShouldPlayAnimation(true);
+    } else {
+      setShouldPlayAnimation(false);
     }
+  }, [visible]);
 
-    if (mangoData && mangoData.image) {
+  useEffect(() => {
+    if (shouldPlayAnimation && surpriseAnimationRef.current) {
+      setTimeout(() => {
+        surpriseAnimationRef.current?.reset();
+        surpriseAnimationRef.current?.play();
+      }, 100);
+    }
+  }, [shouldPlayAnimation]);
+
+  useEffect(() => {
+    if (mangoData?.image) {
       Image.getSize(Image.resolveAssetSource(mangoData.image).uri, (width, height) => {
         const aspectRatio = width / height;
         let newWidth = maxImageSize;
@@ -35,11 +49,14 @@ function MangoModal({ visible, onClose, mangoData }) {
         setImageSize({ width: newWidth, height: newHeight });
       });
     }
-  }, [visible, mangoData, maxImageSize]);
+  }, [mangoData, maxImageSize]);
 
   if (!mangoData) return null;
 
   const rarityColor = RARITY_COLORS[mangoData.rarity] || '#FFD700';
+  const animationSource = mangoData.rarity === '전설' 
+    ? require('../assets/animations/surprise2.json')
+    : require('../assets/animations/surprise.json');
 
   return (
     <Modal
@@ -50,14 +67,16 @@ function MangoModal({ visible, onClose, mangoData }) {
     >
       <View style={styles.modalOverlay}>
         <View style={[styles.modalWrapper, { width: modalWidth }]}>
-          <LottieView
-            ref={surpriseAnimationRef}
-            source={require('../assets/animations/surprise.json')}
-            style={[styles.surpriseAnimation, { width: modalWidth }]}
-            autoPlay={false}
-            loop={false}
-            speed={1}
-          />
+          {shouldPlayAnimation && (
+            <LottieView
+              ref={surpriseAnimationRef}
+              source={animationSource}
+              style={styles.surpriseAnimation}
+              autoPlay={false}
+              loop={false}
+              speed={1}
+            />
+          )}
           <View style={styles.modalContent}>
             <View style={styles.contentContainer}>
               <View style={[styles.infoContainer, { borderColor: rarityColor }]}>
@@ -104,17 +123,18 @@ const styles = StyleSheet.create({
   },
   modalWrapper: {
     alignItems: 'center',
-    marginTop: 50,
+    marginTop: 50, 
   },
   surpriseAnimation: {
+    width: 300,
     height: 300,
     position: 'absolute',
     top: -150,
   },
   modalContent: {
     backgroundColor: 'white',
-    borderRadius: 25,
-    padding: 16,
+    borderRadius: 30,
+    padding: 14,
     alignItems: 'center',
     gap: 14,
     width: '100%',
@@ -126,47 +146,47 @@ const styles = StyleSheet.create({
   infoContainer: {
     width: '100%',
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: 25,
     borderWidth: 2,
     padding: 14,
     alignItems: 'center',
     gap: 14,
   },
   mangoImage: {
-    marginTop: 8,
+    marginTop: 10,
   },
   textRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
   },
   mangoName: {
     fontFamily: 'Wanted Sans',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
   },
   rarityBadge: {
-    paddingVertical: 4,
-    paddingHorizontal: 6,
-    borderRadius: 12,
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
   },
   rarityText: {
     fontFamily: 'Wanted Sans',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
   },
   confirmButton: {
     width: '100%',
-    height: 45,
-    borderRadius: 20,
+    height: 50,
+    borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
   },
   confirmButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
     fontFamily: 'Wanted Sans',
   },
