@@ -4,7 +4,7 @@ export const MANGO_TYPES = {
       name: '황망고',
       image: require('../assets/images/hwang.png'),
       rarity: '전설',
-      probability: 0.2, 
+      probability: 1,
     },
     SON: {
       id: 'suck',

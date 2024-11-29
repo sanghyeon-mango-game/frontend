@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 function ProfileScreen() {
     const navigation = useNavigation();
     const profile = {
-        username: '세케찬',
+        username: '세퀘찬',
         clickCount: 0,
         avocadoCount: 0,
         avocadoId: '아보카도 ID',

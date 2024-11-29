@@ -238,12 +238,10 @@ function ClickerScreen() {
               style={styles.treeContainer}
               activeOpacity={1}
           >
-            <LottieView
-                source={require('../assets/animations/mango.json')}
-                style={styles.treeAnimation}
-                autoPlay={true}
-                loop={true}
-                speed={1}
+            <Image
+                source={require('../assets/images/tree.png')}
+                style={styles.mainMangoImage}
+                resizeMode="contain"
             />
 
             {showClickAnimation && (
@@ -382,7 +380,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  treeAnimation: {
+  mainMangoImage: {
     width: 200,
     height: 200,
   },
