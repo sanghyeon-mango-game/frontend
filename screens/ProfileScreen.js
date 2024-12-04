@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { Settings, BarChart2, Eye } from 'react-native-feather';
 import { useNavigation } from '@react-navigation/native';
 import { MANGO_TYPES } from '../data/MangoData';
 import { TREE_TYPES } from '../data/TreeData';
+import TreeDetailModal from '../components/TreeDetailModal';
 
 function ProfileScreen() {
     const navigation = useNavigation();
+    const [selectedTree, setSelectedTree] = useState(null);
+    const [treeModalVisible, setTreeModalVisible] = useState(false);
+    
     const profile = {
         username: '세퀘찬',
         clickCount: 0,
@@ -108,12 +112,16 @@ function ProfileScreen() {
 
                     <View style={styles.treeGrid}>
                         {trees.map(tree => (
-                            <View
+                            <TouchableOpacity
                                 key={tree.id}
                                 style={[
                                     styles.treeItem,
                                     styles[`${tree.rarity}Background`]
                                 ]}
+                                onPress={() => {
+                                    setSelectedTree(tree);
+                                    setTreeModalVisible(true);
+                                }}
                             >
                                 <Image source={tree.image} style={styles.treeImage} />
                                 <Text style={styles.treeName}>{tree.name}</Text>
@@ -122,7 +130,7 @@ function ProfileScreen() {
                                 <View style={[styles.rarityBadge, styles[`${tree.rarity}Badge`]]}>
                                     <Text style={styles.rarityText}>{tree.rarity}</Text>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                         ))}
                     </View>
 
@@ -149,6 +157,12 @@ function ProfileScreen() {
                     </View>
                 </View>
             </ScrollView>
+
+            <TreeDetailModal
+                visible={treeModalVisible}
+                onClose={() => setTreeModalVisible(false)}
+                treeData={selectedTree}
+            />
         </SafeAreaView>
     );
 }

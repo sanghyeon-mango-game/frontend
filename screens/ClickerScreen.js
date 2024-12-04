@@ -5,9 +5,11 @@ import { User } from 'react-native-feather';
 import LottieView from 'lottie-react-native';
 import MangoModal from '../components/MangoModal';
 import { checkMangoDropAndGet } from '../utils/mangoUtils';
+import { useTree } from '../context/TreeContext';
 
 function ClickerScreen() {
   const navigation = useNavigation();
+  const { selectedTree, setSelectedTree } = useTree();
   const [count, setCount] = useState(0);
   const [fallingMangos, setFallingMangos] = useState([]);
   const [fallingLeaves, setFallingLeaves] = useState([]);
@@ -15,6 +17,7 @@ function ClickerScreen() {
   const [showModal, setShowModal] = useState(false);
   const [currentMango, setCurrentMango] = useState(null);
   const [durability, setDurability] = useState(100);
+  const [isTreeDisabled, setIsTreeDisabled] = useState(false);
   const nextMangoId = useRef(0);
   const nextLeafId = useRef(0);
   const lottieRef = useRef();
@@ -28,7 +31,18 @@ function ClickerScreen() {
       useNativeDriver: false,
       easing: Easing.out(Easing.cubic),
     }).start();
+
+    if (durability <= 0) {
+      setIsTreeDisabled(true);
+    }
   }, [durability]);
+
+  useEffect(() => {
+    // Reset durability and enable tree when selected tree changes
+    setDurability(100);
+    setIsTreeDisabled(false);
+    durabilityAnimValue.setValue(100);
+  }, [selectedTree]);
 
   const startIdleTimer = () => {
     clearTimeout(idleTimerRef.current);
@@ -43,6 +57,8 @@ function ClickerScreen() {
   }, []);
 
   const handleClick = () => {
+    if (isTreeDisabled) return;
+
     setShowClickAnimation(false);
     startIdleTimer();
 
@@ -63,6 +79,7 @@ function ClickerScreen() {
     }
   };
 
+  // Rest of the code remains the same...
   const createFallingMango = () => {
     const mangoId = nextMangoId.current++;
     const startPosition = Math.random() * 200 - 90;
@@ -216,7 +233,8 @@ function ClickerScreen() {
                           width: durabilityAnimValue.interpolate({
                             inputRange: [0, 100],
                             outputRange: ['0%', '100%']
-                          })
+                          }),
+                          backgroundColor: isTreeDisabled ? '#FF0000' : '#4CAF50'
                         }
                       ]}
                   />
@@ -235,16 +253,22 @@ function ClickerScreen() {
 
           <TouchableOpacity
               onPress={handleClick}
-              style={styles.treeContainer}
-              activeOpacity={1}
+              style={[
+                styles.treeContainer,
+                isTreeDisabled && styles.disabledTree
+              ]}
+              activeOpacity={isTreeDisabled ? 1 : 0.8}
           >
             <Image
-                source={require('../assets/images/tree.png')}
-                style={styles.mainMangoImage}
+                source={selectedTree.image || require('../assets/images/tree.png')}
+                style={[
+                  styles.mainMangoImage,
+                  isTreeDisabled && styles.disabledTreeImage
+                ]}
                 resizeMode="contain"
             />
 
-            {showClickAnimation && (
+            {showClickAnimation && !isTreeDisabled && (
                 <LottieView
                     source={require('../assets/animations/click2.json')}
                     style={styles.clickAnimation}
@@ -366,7 +390,6 @@ const styles = StyleSheet.create({
   },
   durabilityFill: {
     height: '100%',
-    backgroundColor: '#4CAF50',
     borderRadius: 5,
   },
   durabilityText: {
@@ -380,9 +403,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  disabledTree: {
+    opacity: 0.5,
+  },
   mainMangoImage: {
     width: 200,
     height: 200,
+  },
+  disabledTreeImage: {
+    tintColor: '#666666',
   },
   clickAnimation: {
     width: 80,

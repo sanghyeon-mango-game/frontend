@@ -2,7 +2,7 @@ export const TREE_TYPES = {
     GOLDEN: {
         id: 'golden',
         name: '황금 나무',
-        image: require('../assets/images/tree.png'),
+        image: require('../assets/images/chan.png'),
         rarity: '전설',
         probability: 0.1, // 10% 확률
         description: '황금빛 망고를 맺는 신비로운 나무',
