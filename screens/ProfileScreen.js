@@ -2,38 +2,46 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { Settings, BarChart2, Eye } from 'react-native-feather';
 import { useNavigation } from '@react-navigation/native';
+import { MANGO_TYPES } from '../data/MangoData';
+import { TREE_TYPES } from '../data/TreeData';
 
 function ProfileScreen() {
     const navigation = useNavigation();
     const profile = {
         username: '세퀘찬',
         clickCount: 0,
-        avocadoCount: 0,
-        avocadoId: '아보카도 ID',
+        treeCount: 0,
+        treeId: '나무 ID',
         totalFriends: 0,
         balance: 269,
         winRate: '0%',
         winLoss: '0 / 0',
-        selectedAvocado: require('../assets/images/Mango.png'),
-        collectedAvocados: [
-            {
-                id: 1,
-                image: require('../assets/images/hwang.png'),
-                name: '???',
-                count: 1,
-            },
-            {
-                id: 2,
-                image: require('../assets/images/son.png'),
-                name: '구워진 아보카도',
-                count: 1,
-            }
-        ]
     };
+
+    const mangos = Object.values(MANGO_TYPES).map(mango => ({
+        id: mango.id,
+        image: mango.image,
+        name: mango.name,
+        count: 1,
+        rarity: mango.rarity
+    }));
+
+    const trees = Object.values(TREE_TYPES).map(tree => ({
+        id: tree.id,
+        image: tree.image,
+        name: tree.name,
+        count: 1,
+        rarity: tree.rarity,
+        description: tree.description
+    }));
 
     return (
         <SafeAreaView style={styles.safe}>
-            <ScrollView style={styles.container}>
+            <ScrollView
+                style={styles.container}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={true}
+            >
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Text style={styles.backButton}>{'<'}</Text>
@@ -56,8 +64,8 @@ function ProfileScreen() {
                             <Text style={styles.statValue}>{profile.clickCount}</Text>
                         </View>
                         <View style={styles.stat}>
-                            <Text style={styles.statLabel}>슈퍼 아보카도</Text>
-                            <Text style={styles.statValue}>{profile.avocadoCount}개</Text>
+                            <Text style={styles.statLabel}>나무</Text>
+                            <Text style={styles.statValue}>{profile.treeCount}개</Text>
                         </View>
                     </View>
 
@@ -74,9 +82,9 @@ function ProfileScreen() {
 
                     <View style={styles.infoCard}>
                         <View style={styles.infoRow}>
-                            <Text style={styles.infoLabel}>아보카도 ID</Text>
+                            <Text style={styles.infoLabel}>나무 ID</Text>
                             <View style={styles.infoValue}>
-                                <Text>{profile.avocadoId}</Text>
+                                <Text>{profile.treeId}</Text>
                                 <Eye color="#000" size={16} />
                             </View>
                         </View>
@@ -96,18 +104,46 @@ function ProfileScreen() {
                 </View>
 
                 <View style={styles.collectionSection}>
-                    <Text style={styles.sectionTitle}>선택한 아보카도</Text>
-                    <Image source={profile.selectedAvocado} style={styles.selectedAvocado} />
+                    <Text style={styles.sectionTitle}>보유중인 나무</Text>
 
-                    <Text style={styles.sectionTitle}>전체 슈퍼 아보카도</Text>
+                    <View style={styles.treeGrid}>
+                        {trees.map(tree => (
+                            <View
+                                key={tree.id}
+                                style={[
+                                    styles.treeItem,
+                                    styles[`${tree.rarity}Background`]
+                                ]}
+                            >
+                                <Image source={tree.image} style={styles.treeImage} />
+                                <Text style={styles.treeName}>{tree.name}</Text>
+                                <Text style={styles.treeDescription}>{tree.description}</Text>
+                                <Text style={styles.treeCount}>{tree.count}개</Text>
+                                <View style={[styles.rarityBadge, styles[`${tree.rarity}Badge`]]}>
+                                    <Text style={styles.rarityText}>{tree.rarity}</Text>
+                                </View>
+                            </View>
+                        ))}
+                    </View>
+
+                    <Text style={[styles.sectionTitle, { marginTop: 32 }]}>보유중인 망고</Text>
                     <Text style={styles.collectionSubtitle}>길게 눌러서 스킨 적용</Text>
 
-                    <View style={styles.avocadoGrid}>
-                        {profile.collectedAvocados.map(avocado => (
-                            <View key={avocado.id} style={styles.avocadoItem}>
-                                <Image source={avocado.image} style={styles.avocadoImage} />
-                                <Text style={styles.avocadoName}>{avocado.name}</Text>
-                                <Text style={styles.avocadoCount}>{avocado.count}개</Text>
+                    <View style={styles.mangoGrid}>
+                        {mangos.map(mango => (
+                            <View
+                                key={mango.id}
+                                style={[
+                                    styles.mangoItem,
+                                    styles[`${mango.rarity}Background`]
+                                ]}
+                            >
+                                <Image source={mango.image} style={styles.mangoImage} />
+                                <Text style={styles.mangoName}>{mango.name}</Text>
+                                <Text style={styles.mangoCount}>{mango.count}개</Text>
+                                <View style={[styles.rarityBadge, styles[`${mango.rarity}Badge`]]}>
+                                    <Text style={styles.rarityText}>{mango.rarity}</Text>
+                                </View>
                             </View>
                         ))}
                     </View>
@@ -124,6 +160,9 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
+    },
+    scrollContent: {
+        paddingBottom: 100,
     },
     header: {
         flexDirection: 'row',
@@ -226,42 +265,102 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginBottom: 16,
     },
-    selectedAvocado: {
-        width: 80,
-        height: 80,
-        marginBottom: 24,
-    },
     collectionSubtitle: {
         fontSize: 14,
         color: '#666',
         marginBottom: 16,
     },
-    avocadoGrid: {
+    treeGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap: 16,
     },
-    avocadoItem: {
+    treeItem: {
         width: '45%',
-        backgroundColor: '#000',
         borderRadius: 12,
         padding: 16,
         alignItems: 'center',
+        position: 'relative',
     },
-    avocadoImage: {
+    treeImage: {
         width: 60,
         height: 60,
         marginBottom: 8,
     },
-    avocadoName: {
+    treeName: {
         color: '#fff',
         fontSize: 16,
         fontWeight: '500',
         marginBottom: 4,
     },
-    avocadoCount: {
+    treeDescription: {
+        color: '#fff',
+        fontSize: 12,
+        textAlign: 'center',
+        opacity: 0.7,
+        marginBottom: 8,
+    },
+    treeCount: {
         color: '#FFD84D',
         fontSize: 14,
+    },
+    mangoGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 16,
+    },
+    mangoItem: {
+        width: '45%',
+        borderRadius: 12,
+        padding: 16,
+        alignItems: 'center',
+        position: 'relative',
+    },
+    mangoImage: {
+        width: 60,
+        height: 60,
+        marginBottom: 8,
+    },
+    mangoName: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '500',
+        marginBottom: 4,
+    },
+    mangoCount: {
+        color: '#FFD84D',
+        fontSize: 14,
+    },
+    '전설Background': {
+        backgroundColor: '#2C2C2C',
+    },
+    '희귀Background': {
+        backgroundColor: '#3C3C3C',
+    },
+    '일반Background': {
+        backgroundColor: '#4C4C4C',
+    },
+    rarityBadge: {
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+    },
+    '전설Badge': {
+        backgroundColor: 'rgba(255, 215, 0, 0.2)',
+    },
+    '희귀Badge': {
+        backgroundColor: 'rgba(192, 192, 192, 0.2)',
+    },
+    '일반Badge': {
+        backgroundColor: 'rgba(205, 127, 50, 0.2)',
+    },
+    rarityText: {
+        color: '#FFF',
+        fontSize: 12,
+        fontWeight: '500',
     },
 });
 
