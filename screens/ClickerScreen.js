@@ -6,11 +6,14 @@ import LottieView from 'lottie-react-native';
 import MangoModal from '../components/MangoModal';
 import { checkMangoDropAndGet } from '../utils/mangoUtils';
 import { useTree } from '../context/TreeContext';
+import { useGame } from '../context/GameContext';
+import { useItems } from '../context/ItemContext';
 
 function ClickerScreen() {
   const navigation = useNavigation();
   const { selectedTree, setSelectedTree } = useTree();
-  const [count, setCount] = useState(0);
+  const { clickCount, incrementClickCount } = useGame();
+  const { activeItems } = useItems();
   const [fallingMangos, setFallingMangos] = useState([]);
   const [fallingLeaves, setFallingLeaves] = useState([]);
   const [showClickAnimation, setShowClickAnimation] = useState(false);
@@ -38,7 +41,6 @@ function ClickerScreen() {
   }, [durability]);
 
   useEffect(() => {
-    // Reset durability and enable tree when selected tree changes
     setDurability(100);
     setIsTreeDisabled(false);
     durabilityAnimValue.setValue(100);
@@ -62,6 +64,7 @@ function ClickerScreen() {
     setShowClickAnimation(false);
     startIdleTimer();
 
+    incrementClickCount();
     setDurability(prev => Math.max(0, prev - 2));
 
     const droppedMango = checkMangoDropAndGet();
@@ -70,7 +73,6 @@ function ClickerScreen() {
       setShowModal(true);
     }
 
-    setCount(prev => prev + 1);
     createFallingMango();
 
     const leafCount = Math.floor(Math.random() * 2) + 1;
@@ -79,7 +81,6 @@ function ClickerScreen() {
     }
   };
 
-  // Rest of the code remains the same...
   const createFallingMango = () => {
     const mangoId = nextMangoId.current++;
     const startPosition = Math.random() * 200 - 90;
@@ -221,7 +222,7 @@ function ClickerScreen() {
                     source={require('../assets/images/Mango.png')}
                     style={styles.mangoIcon}
                 />
-                <Text style={styles.scoreText}>{count.toLocaleString()}</Text>
+                <Text style={styles.scoreText}>{clickCount.toLocaleString()}</Text>
               </View>
 
               <View style={styles.durabilityContainer}>
@@ -325,6 +326,26 @@ function ClickerScreen() {
                   ]}
               />
           ))}
+
+          {activeItems.length > 0 && (
+              <View style={styles.activeItemsContainer}>
+                {activeItems.map((item) => {
+                  const remainingTime = Math.max(0,
+                      Math.floor((new Date(item.expiresAt) - new Date()) / 1000)
+                  );
+                  const minutes = Math.floor(remainingTime / 60);
+                  const seconds = remainingTime % 60;
+
+                  return (
+                      <View key={item.id} style={styles.activeItemBadge}>
+                        <Text style={styles.activeItemText}>
+                          {item.name} 적용 중 ({minutes}:{seconds.toString().padStart(2, '0')})
+                        </Text>
+                      </View>
+                  );
+                })}
+              </View>
+          )}
         </View>
       </View>
   );
@@ -445,6 +466,33 @@ const styles = StyleSheet.create({
     left: '50%',
     marginLeft: -7.5,
   },
+  // 아이템 표시를 위한 새로운 스타일
+  activeItemsContainer: {
+    position: 'absolute',
+    bottom: 150,
+    right: 20,
+    alignItems: 'flex-end',
+  },
+  activeItemBadge: {
+    backgroundColor: 'rgba(255, 216, 77, 0.9)',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    marginTop: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  activeItemText: {
+    color: '#000000',
+    fontWeight: '600',
+    fontSize: 14,
+  }
 });
 
 export default ClickerScreen;

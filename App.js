@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, Animated, Dimensions, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -6,6 +6,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TreeProvider } from './context/TreeContext';
+import { GameProvider } from './context/GameContext';
+import { ItemProvider } from './context/ItemContext';
 
 // Screens
 import ClickerScreen from './screens/ClickerScreen';
@@ -185,38 +187,42 @@ function TabBar({ state, descriptors, navigation }) {
 
 function App() {
     return (
-        <TreeProvider>
-            <NavigationContainer>
-                <Tab.Navigator
-                    tabBar={props => <TabBar {...props} />}
-                    initialRouteName="Clicker"
-                    screenOptions={{
-                        headerShown: false,
-                    }}
-                >
-                    <Tab.Screen
-                        name="Clicker"
-                        component={ClickerStackNavigator}
-                    />
-                    <Tab.Screen
-                        name="Ranking"
-                        component={RankingScreen}
-                    />
-                    <Tab.Screen
-                        name="Market"
-                        component={MarketScreen}
-                    />
-                    <Tab.Screen
-                        name="Gifts"
-                        component={GiftsScreen}
-                    />
-                    <Tab.Screen
-                        name="ItemShop"
-                        component={ItemShopScreen}
-                    />
-                </Tab.Navigator>
-            </NavigationContainer>
-        </TreeProvider>
+        <GameProvider>
+            <TreeProvider>
+                <ItemProvider>
+                    <NavigationContainer>
+                        <Tab.Navigator
+                            tabBar={props => <TabBar {...props} />}
+                            initialRouteName="Clicker"
+                            screenOptions={{
+                                headerShown: false,
+                            }}
+                        >
+                            <Tab.Screen
+                                name="Clicker"
+                                component={ClickerStackNavigator}
+                            />
+                            <Tab.Screen
+                                name="Ranking"
+                                component={RankingScreen}
+                            />
+                            <Tab.Screen
+                                name="Market"
+                                component={MarketScreen}
+                            />
+                            <Tab.Screen
+                                name="Gifts"
+                                component={GiftsScreen}
+                            />
+                            <Tab.Screen
+                                name="ItemShop"
+                                component={ItemShopScreen}
+                            />
+                        </Tab.Navigator>
+                    </NavigationContainer>
+                </ItemProvider>
+            </TreeProvider>
+        </GameProvider>
     );
 }
 

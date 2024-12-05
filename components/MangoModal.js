@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
 import LottieView from 'lottie-react-native';
+import { useGame } from '../context/GameContext';
 
 const RARITY_COLORS = {
   전설: '#FFD700',
@@ -15,14 +16,16 @@ function MangoModal({ visible, onClose, mangoData }) {
   const screenWidth = Dimensions.get('window').width;
   const modalWidth = Math.min(screenWidth * 0.9, 300);
   const maxImageSize = modalWidth * 0.2;
+  const { addMango } = useGame();
 
   useEffect(() => {
-    if (visible) {
+    if (visible && mangoData) {
       setShouldPlayAnimation(true);
+      addMango(mangoData);
     } else {
       setShouldPlayAnimation(false);
     }
-  }, [visible]);
+  }, [visible, mangoData]);
 
   useEffect(() => {
     if (shouldPlayAnimation && surpriseAnimationRef.current) {

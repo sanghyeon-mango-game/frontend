@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { Settings, BarChart2, Eye } from 'react-native-feather';
 import { useNavigation } from '@react-navigation/native';
-import { MANGO_TYPES } from '../data/MangoData';
 import { TREE_TYPES } from '../data/TreeData';
 import TreeDetailModal from '../components/TreeDetailModal';
+import { useGame } from '../context/GameContext';
 
 function ProfileScreen() {
     const navigation = useNavigation();
     const [selectedTree, setSelectedTree] = useState(null);
     const [treeModalVisible, setTreeModalVisible] = useState(false);
+    const { clickCount, treeCount, collectedMangos } = useGame();
     
     const profile = {
         username: '세퀘찬',
-        clickCount: 0,
-        treeCount: 0,
+        clickCount: clickCount,
+        treeCount: treeCount,
         treeId: '나무 ID',
         totalFriends: 0,
         balance: 269,
@@ -22,15 +23,7 @@ function ProfileScreen() {
         winLoss: '0 / 0',
     };
 
-    const mangos = Object.values(MANGO_TYPES).map(mango => ({
-        id: mango.id,
-        image: mango.image,
-        name: mango.name,
-        count: 1,
-        rarity: mango.rarity
-    }));
-
-    const trees = Object.values(TREE_TYPES).map(tree => ({
+    const treeItems = Object.values(TREE_TYPES).map(tree => ({
         id: tree.id,
         image: tree.image,
         name: tree.name,
@@ -65,7 +58,7 @@ function ProfileScreen() {
                     <View style={styles.statsRow}>
                         <View style={styles.stat}>
                             <Text style={styles.statLabel}>클릭수</Text>
-                            <Text style={styles.statValue}>{profile.clickCount}</Text>
+                            <Text style={styles.statValue}>{profile.clickCount.toLocaleString()}</Text>
                         </View>
                         <View style={styles.stat}>
                             <Text style={styles.statLabel}>나무</Text>
@@ -111,7 +104,7 @@ function ProfileScreen() {
                     <Text style={styles.sectionTitle}>보유중인 나무</Text>
 
                     <View style={styles.treeGrid}>
-                        {trees.map(tree => (
+                        {treeItems.map(tree => (
                             <TouchableOpacity
                                 key={tree.id}
                                 style={[
@@ -135,11 +128,11 @@ function ProfileScreen() {
                     </View>
 
                     <Text style={[styles.sectionTitle, { marginTop: 32 }]}>보유중인 망고</Text>
-                    <Text style={styles.collectionSubtitle}>길게 눌러서 스킨 적용</Text>
+                    <Text style={styles.collectionSubtitle}>클릭으로 모은 망고들</Text>
 
                     <View style={styles.mangoGrid}>
-                        {mangos.map(mango => (
-                            <View
+                        {collectedMangos.map(mango => (
+                            <TouchableOpacity
                                 key={mango.id}
                                 style={[
                                     styles.mangoItem,
@@ -152,8 +145,14 @@ function ProfileScreen() {
                                 <View style={[styles.rarityBadge, styles[`${mango.rarity}Badge`]]}>
                                     <Text style={styles.rarityText}>{mango.rarity}</Text>
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                         ))}
+                        {collectedMangos.length === 0 && (
+                            <View style={styles.emptyStateContainer}>
+                                <Text style={styles.emptyStateText}>아직 모은 망고가 없습니다</Text>
+                                <Text style={styles.emptyStateSubtext}>나무를 클릭해서 망고를 모아보세요!</Text>
+                            </View>
+                        )}
                     </View>
                 </View>
             </ScrollView>
@@ -344,6 +343,22 @@ const styles = StyleSheet.create({
     mangoCount: {
         color: '#FFD84D',
         fontSize: 14,
+    },
+    emptyStateContainer: {
+        width: '100%',
+        padding: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    emptyStateText: {
+        fontSize: 16,
+        color: '#666',
+        fontWeight: '500',
+        marginBottom: 8,
+    },
+    emptyStateSubtext: {
+        fontSize: 14,
+        color: '#999',
     },
     '전설Background': {
         backgroundColor: '#2C2C2C',
